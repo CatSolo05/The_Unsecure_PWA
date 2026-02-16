@@ -31,5 +31,6 @@
       "visibility": "public"
     }
   },
-  "liveServer.settings.root": ".student_resources"
+  "liveServer.settings.root": ".student_resources",
+  "cSpell.words": ["checkpw", "gensalt", "hashpw"]
 }

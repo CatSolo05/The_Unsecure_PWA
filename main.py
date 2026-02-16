@@ -2,15 +2,15 @@ from flask import Flask
 from flask import render_template
 from flask import request
 from flask import redirect
-from flask_cors import CORS
+from flask_wtf.csrf import CSRFProtect
 import user_management as dbHandler
 
 # Code snippet for logging a message
 # app.logger.critical("message")
 
 app = Flask(__name__)
-# Enable CORS to allow cross-origin requests (needed for CSRF demo in Codespaces)
-CORS(app)
+app.config["SECRET_KEY"] = "my-secret-key-123"
+csrf = CSRFProtect(app)
 
 
 @app.route("/success.html", methods=["POST", "GET", "PUT", "PATCH", "DELETE"])
@@ -20,11 +20,11 @@ def addFeedback():
         return redirect(url, code=302)
     if request.method == "POST":
         feedback = request.form["feedback"]
-        dbHandler.insertFeedback(feedback)
-        dbHandler.listFeedback()
+        dbHandler.insert_feedback(feedback)
+        dbHandler.list_feedback()
         return render_template("/success.html", state=True, value="Back")
     else:
-        dbHandler.listFeedback()
+        dbHandler.list_feedback()
         return render_template("/success.html", state=True, value="Back")
 
 
@@ -37,7 +37,7 @@ def signup():
         username = request.form["username"]
         password = request.form["password"]
         DoB = request.form["dob"]
-        dbHandler.insertUser(username, password, DoB)
+        dbHandler.insert_user(username, password, DoB)
         return render_template("/index.html")
     else:
         return render_template("/signup.html")
@@ -57,10 +57,10 @@ def home():
     elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        isLoggedIn = dbHandler.retrieveUsers(username, password)
-        if isLoggedIn:
-            dbHandler.listFeedback()
-            return render_template("/success.html", value=username, state=isLoggedIn)
+        is_logged_in = dbHandler.retrieve_users(username, password)
+        if is_logged_in:
+            dbHandler.list_feedback()
+            return render_template("/success.html", value=username, state=is_logged_in)
         else:
             return render_template("/index.html")
     else:
